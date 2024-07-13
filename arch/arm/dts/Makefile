@@ -1183,6 +1183,8 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mq-kontron-pitx-imx8m.dtb \
 	imx8mq-librem5-r4.dtb
 
+dtb-$(CONFIG_TARGET_COMPULAB_IMX8) += cl-som-imx8.dtb
+
 dtb-$(CONFIG_ARCH_IMX9) += \
 	imx95-15x15-evk.dtb \
 	imx95-19x19-evk.dtb \

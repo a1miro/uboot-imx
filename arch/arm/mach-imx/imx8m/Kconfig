@@ -84,6 +84,16 @@ config TARGET_IMX8MQ_EVK
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
+config TARGET_COMPULAB_IMX8
+    bool "cl_som_imx8"
+    select IMX8MQ
+	select IMX8M_LPDDR4
+	select FSL_CAAM
+	select FSL_BLOB
+	select ARCH_MISC_INIT
+    #select SUPPORT_SPL
+	select SPL_CRYPTO if SPL
+
 config TARGET_IMX8MQ_PHANBELL
 	bool "imx8mq_phanbell"
 	select IMX8MQ
@@ -482,5 +492,6 @@ source "board/variscite/imx8mn_var_som/Kconfig"
 source "board/toradex/verdin-imx8mm/Kconfig"
 source "board/toradex/verdin-imx8mp/Kconfig"
 source "board/voxelbotics/navqp/Kconfig"
+source "board/freescale/cl-som-imx8/Kconfig"
 
 endif
