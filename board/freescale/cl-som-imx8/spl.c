@@ -33,11 +33,12 @@
 #include <asm/arch/imx8mq_sec_def.h>
 #include <asm/arch/imx8m_csu.h>
 #include <asm/arch/imx8m_rdc.h>
+#include "ddr/ddr.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
 extern struct dram_timing_info dram_timing_b0;
-extern struct dram_timing_info dram_timing_4g;
+//extern struct dram_timing_info dram_timing_4g;
 
 static void spl_dram_init(void)
 {
@@ -52,10 +53,10 @@ static void spl_dram_init(void)
 	}
 #else
 	/* ddr init */
-	if (soc_rev() >= CHIP_REV_2_1)
+	//if (soc_rev() >= CHIP_REV_2_1)
 		ddr_init(&dram_timing);
-	else
-		ddr_init(&dram_timing_b0);
+	//else
+		//ddr_init(&dram_timing_b0);
 #endif
 }
 
