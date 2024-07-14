@@ -64,17 +64,18 @@ static void spl_dram_init(void)
 #define PC MUX_PAD_CTRL(I2C_PAD_CTRL)
 static struct i2c_pads_info i2c_pad_info1 = {
 	.scl = {
-		.i2c_mode = IMX8MQ_PAD_I2C1_SCL__I2C1_SCL | PC,
-		.gpio_mode = IMX8MQ_PAD_I2C1_SCL__GPIO5_IO14 | PC,
+		.i2c_mode = IMX8MQ_PAD_I2C2_SCL__I2C2_SCL | PC,
+		.gpio_mode = IMX8MQ_PAD_I2C2_SCL__GPIO5_IO16 | PC,
 		.gp = IMX_GPIO_NR(5, 14),
 	},
 	.sda = {
-		.i2c_mode = IMX8MQ_PAD_I2C1_SDA__I2C1_SDA | PC,
-		.gpio_mode = IMX8MQ_PAD_I2C1_SDA__GPIO5_IO15 | PC,
+		.i2c_mode = IMX8MQ_PAD_I2C2_SDA__I2C2_SDA | PC,
+		.gpio_mode = IMX8MQ_PAD_I2C2_SDA__GPIO5_IO17 | PC,
 		.gp = IMX_GPIO_NR(5, 15),
 	},
 };
 
+#if 0
 static struct i2c_pads_info i2c_pad_info3 = {
 	.scl = {
 		.i2c_mode = IMX8MQ_PAD_I2C3_SCL__I2C3_SCL | PC,
@@ -87,6 +88,7 @@ static struct i2c_pads_info i2c_pad_info3 = {
 		.gp = IMX_GPIO_NR(5, 19),
 	},
 };
+#endif
 
 #define USDHC2_CD_GPIO	IMX_GPIO_NR(2, 12)
 #define USDHC1_PWR_GPIO IMX_GPIO_NR(2, 10)
@@ -188,7 +190,7 @@ int board_mmc_init(struct bd_info *bis)
 }
 
 #if CONFIG_IS_ENABLED(POWER_LEGACY)
-#define I2C_PMIC	0
+#define I2C_PMIC	1
 int power_init_board(void)
 {
 	struct pmic *p;
@@ -293,8 +295,8 @@ void board_init_f(ulong dummy)
 
 	enable_tzc380();
 
-	setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
-	setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
+	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
+	//setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
 
 	power_init_board();
 
