@@ -11,7 +11,7 @@
 
 / {
 	model = "NXP i.MX8MQ EVK";
-	compatible = "fsl,imx8mq-evk", "fsl,imx8mq";
+	compatible = "fsl,cl-som-imx8", "fsl,imx8mq";
 
 	chosen {
 		bootargs = "console=ttymxc0,115200 earlycon=ec_imx6q,0x30860000,115200";
@@ -24,6 +24,16 @@
 			method = "smc";
 		};
 	};
+
+	leds {
+		compatible = "gpio-leds";
+		heartbeat-led {
+			label = "Heartbeat";
+			gpios = <&gpio1 12 0>;
+			linux,default-trigger = "heartbeat";
+		};
+	};
+
 
 	memory@40000000 {
 		device_type = "memory";
