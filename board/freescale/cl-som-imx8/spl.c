@@ -37,7 +37,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-extern struct dram_timing_info dram_timing_b0;
+//extern struct dram_timing_info dram_timing_b0;
 //extern struct dram_timing_info dram_timing_4g;
 
 static void spl_dram_init(void)
