@@ -347,9 +347,8 @@
 			};
 		};
 	};
-};
 
-eeprom@50 {
+	eeprom@50 {
 		compatible = "at24,24c02";
 		reg = <0x50>;
 		pagesize = <16>;
@@ -359,6 +358,9 @@ eeprom@50 {
 		compatible = "emmicro,em3027";
 		reg = <0x56>;
 	};
+};
+
+	
 
 
 &dphy {
