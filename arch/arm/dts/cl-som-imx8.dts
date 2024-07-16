@@ -10,7 +10,7 @@
 #include "imx8mq.dtsi"
 
 / {
-	model = "NXP i.MX8MQ EVK";
+	model = "Compulab CL-SOM-iMX8";
 	compatible = "fsl,cl-som-imx8", "fsl,imx8mq";
 
 	chosen {
@@ -270,30 +270,30 @@
 
 		regulators {
 			sw1a_reg: sw1ab {
-				regulator-min-microvolt = <825000>;
-				regulator-max-microvolt = <1100000>;
+				regulator-min-microvolt = <300000>;
+				regulator-max-microvolt = <1875000>;
 			};
 
 			sw1c_reg: sw1c {
-				regulator-min-microvolt = <825000>;
-				regulator-max-microvolt = <1100000>;
+				regulator-min-microvolt = <300000>;
+				regulator-max-microvolt = <1875000>;
 			};
 
 			sw2_reg: sw2 {
-				regulator-min-microvolt = <1100000>;
-				regulator-max-microvolt = <1100000>;
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <3300000>;
 				regulator-always-on;
 			};
 
 			sw3a_reg: sw3ab {
-				regulator-min-microvolt = <825000>;
-				regulator-max-microvolt = <1100000>;
+				regulator-min-microvolt = <400000>;
+				regulator-max-microvolt = <1975000>;
 				regulator-always-on;
 			};
 
 			sw4_reg: sw4 {
-				regulator-min-microvolt = <1800000>;
-				regulator-max-microvolt = <1800000>;
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <3300000>;
 				regulator-always-on;
 			};
 
@@ -318,26 +318,26 @@
 			};
 
 			vgen2_reg: vgen2 {
-				regulator-min-microvolt = <850000>;
-				regulator-max-microvolt = <975000>;
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <1550000>;
 				regulator-always-on;
 			};
 
 			vgen3_reg: vgen3 {
-				regulator-min-microvolt = <1675000>;
-				regulator-max-microvolt = <1975000>;
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <3300000>;
 				regulator-always-on;
 			};
 
 			vgen4_reg: vgen4 {
-				regulator-min-microvolt = <1625000>;
-				regulator-max-microvolt = <1875000>;
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <3300000>;
 				regulator-always-on;
 			};
 
 			vgen5_reg: vgen5 {
-				regulator-min-microvolt = <3075000>;
-				regulator-max-microvolt = <3625000>;
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <3300000>;
 				regulator-always-on;
 			};
 
