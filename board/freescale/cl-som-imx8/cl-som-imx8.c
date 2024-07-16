@@ -33,6 +33,49 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#define I2C_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE)
+#define PC MUX_PAD_CTRL(I2C_PAD_CTRL)
+
+struct i2c_pads_info i2c_pad_info0 = {
+	.scl = {
+		.i2c_mode = IMX8MQ_PAD_I2C1_SCL__I2C1_SCL | PC,
+		.gpio_mode = IMX8MQ_PAD_I2C1_SCL__GPIO5_IO14 | PC,
+		.gp = IMX_GPIO_NR(5, 14),
+	},
+	.sda = {
+		.i2c_mode = IMX8MQ_PAD_I2C1_SDA__I2C1_SDA | PC,
+		.gpio_mode = IMX8MQ_PAD_I2C1_SDA__GPIO5_IO15 | PC,
+		.gp = IMX_GPIO_NR(5, 15),
+	},
+};
+
+static struct i2c_pads_info i2c_pad_info1 = {
+	.scl = {
+		.i2c_mode = IMX8MQ_PAD_I2C2_SCL__I2C2_SCL | PC,
+		.gpio_mode = IMX8MQ_PAD_I2C2_SCL__GPIO5_IO16 | PC,
+		.gp = IMX_GPIO_NR(5, 16),
+	},
+	.sda = {
+		.i2c_mode = IMX8MQ_PAD_I2C2_SDA__I2C2_SDA | PC,
+		.gpio_mode = IMX8MQ_PAD_I2C2_SDA__GPIO5_IO17 | PC,
+		.gp = IMX_GPIO_NR(5, 17),
+	},
+};
+
+static struct i2c_pads_info i2c_pad_info3 = {
+	.scl = {
+		.i2c_mode = IMX8MQ_PAD_I2C3_SCL__I2C3_SCL | PC,
+		.gpio_mode = IMX8MQ_PAD_I2C3_SCL__GPIO5_IO18| PC,
+		.gp = IMX_GPIO_NR(5, 18),
+	},
+	.sda = {
+		.i2c_mode = IMX8MQ_PAD_I2C3_SDA__I2C3_SDA | PC,
+		.gpio_mode = IMX8MQ_PAD_I2C3_SDA__GPIO5_IO19 | PC,
+		.gp = IMX_GPIO_NR(5, 19),
+	},
+};
+
+
 #define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
 
 #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE)
@@ -278,6 +321,12 @@ int board_init(void)
 #ifdef CONFIG_FEC_MXC
 	setup_fec();
 #endif
+
+/* Configure #0 bus in order to read an #0x54 eeprom */
+setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info0);
+
+setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
+setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
 	init_usb_clk();
