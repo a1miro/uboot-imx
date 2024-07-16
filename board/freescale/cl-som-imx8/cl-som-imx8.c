@@ -335,6 +335,7 @@ setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
 #ifdef CONFIG_USB_TCPC
 	setup_typec();
 #endif
+
 	return 0;
 }
 
