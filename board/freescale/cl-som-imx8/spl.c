@@ -60,6 +60,18 @@ static void spl_dram_init(void)
 #endif
 }
 
+#define UART_PAD_CTRL (PAD_CTL_PUE |  PAD_CTL_DSE7 | PAD_CTL_HYS)
+
+static const iomux_v3_cfg_t uart3_pads[] = {
+	IMX8MQ_PAD_ECSPI1_MOSI__UART3_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+	IMX8MQ_PAD_ECSPI1_SCLK__UART3_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+};
+
+static void setup_iomux_uart(void)
+{
+	imx_iomux_v3_setup_multiple_pads(uart3_pads, ARRAY_SIZE(uart3_pads));
+}
+
 #define I2C_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE)
 #define PC MUX_PAD_CTRL(I2C_PAD_CTRL)
 static struct i2c_pads_info i2c_pad_info1 = {
@@ -87,6 +99,9 @@ static struct i2c_pads_info i2c_pad_info3 = {
 		.gp = IMX_GPIO_NR(5, 19),
 	},
 };
+
+//MX8MQ_IOMUXC_UART3_TXD_UART3_DCE_TX		0x49
+//MX8MQ_IOMUXC_UART3_RXD_UART3_DCE_RX		0x49
 
 #define USDHC2_CD_GPIO	IMX_GPIO_NR(2, 12)
 #define USDHC1_PWR_GPIO IMX_GPIO_NR(2, 10)
@@ -282,6 +297,8 @@ void board_init_f(ulong dummy)
 	board_early_init_f();
 
 	timer_init();
+
+	setup_iomux_uart();
 
 	preloader_console_init();
 
