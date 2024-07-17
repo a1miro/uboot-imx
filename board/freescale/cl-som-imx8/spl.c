@@ -29,7 +29,7 @@
 #include <power/pmic.h>
 #include <power/pfuze100_pmic.h>
 #include <spl.h>
-#include "../../freescale/common/pfuze.h"
+#include "../common/pfuze.h"
 #include <asm/arch/imx8mq_sec_def.h>
 #include <asm/arch/imx8m_csu.h>
 #include <asm/arch/imx8m_rdc.h>
@@ -245,12 +245,15 @@ int power_init_board(void)
 
 void spl_board_init(void)
 {
+	// The lines below are commented owut as cl-som-imx8 does not have in version 2018.3
+	/*
 	if (IS_ENABLED(CONFIG_FSL_CAAM)) {
 		if (sec_init())
 			printf("\nsec_init failed!\n");
 	}
 
 	init_usb_clk();
+	*/
 
 	puts("Normal Boot\n");
 }
@@ -288,7 +291,8 @@ void board_init_f(ulong dummy)
 	memset(__bss_start, 0, __bss_end - __bss_start);
 
 	/* PCIE_VPH connects to 3.3v on EVK, enable VREG to generate 1.8V to PHY */
-	enable_pcie_vreg(true);
+	// The line below is commented owut as cl-som-imx8 does not have in version 2018.3
+	// enable_pcie_vreg(true); 
 
 	arch_cpu_init();
 
@@ -311,6 +315,7 @@ void board_init_f(ulong dummy)
 	enable_tzc380();
 
 	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
+	// The line below is commented owut as cl-som-imx8 does not have in version 2018.3
 	//setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
 
 	power_init_board();
