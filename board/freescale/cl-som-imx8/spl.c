@@ -277,7 +277,7 @@ void board_init_f(ulong dummy)
 
 	arch_cpu_init();
 
-	init_uart_clk(2);
+	init_uart_clk(2);  /* UART3 clock */
 
 	board_early_init_f();
 
