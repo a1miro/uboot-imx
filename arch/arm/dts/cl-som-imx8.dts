@@ -568,7 +568,7 @@
 	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
 	wp-gpios = <&gpio2 20 GPIO_ACTIVE_HIGH>;
 	vmmc-supply = <&reg_usdhc2_vmmc>;
-	no-1-8-v;
+	/*no-1-8-v;*/
 	status = "okay";
 };
 
