@@ -89,6 +89,10 @@ static iomux_v3_cfg_t const uart_pads[] = {
 	IMX8MQ_PAD_UART1_TXD__UART1_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
 };
 
+static iomux_v3_cfg_t const usbmux_pads[] = {
+	IMX8MQ_PAD_GPIO1_IO04__GPIO1_IO4 | MUX_PAD_CTRL(NO_PAD_CTRL),
+};
+
 #if CONFIG_IS_ENABLED(EFI_HAVE_CAPSULE_SUPPORT)
 struct efi_fw_image fw_images[] = {
 	{
@@ -312,6 +316,14 @@ int board_usb_cleanup(int index, enum usb_init_type init)
 }
 #endif
 
+static void setup_iomux_usbmux(void)
+{
+	imx_iomux_v3_setup_multiple_pads(usbmux_pads, ARRAY_SIZE(usbmux_pads));
+
+	gpio_request(IMX_GPIO_NR(1, 4), "usb_mux");
+	gpio_direction_output(IMX_GPIO_NR(1, 4), 0);
+}
+
 int board_init(void)
 {
 #ifdef CONFIG_FSL_QSPI
@@ -327,6 +339,8 @@ setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info0);
 
 setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
 setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
+
+setup_iomux_usbmux();
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
 	init_usb_clk();

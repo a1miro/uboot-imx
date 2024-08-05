@@ -100,9 +100,6 @@ static struct i2c_pads_info i2c_pad_info3 = {
 	},
 };
 
-//MX8MQ_IOMUXC_UART3_TXD_UART3_DCE_TX		0x49
-//MX8MQ_IOMUXC_UART3_RXD_UART3_DCE_RX		0x49
-
 #define USDHC2_CD_GPIO	IMX_GPIO_NR(2, 12)
 #define USDHC1_PWR_GPIO IMX_GPIO_NR(2, 10)
 #define USDHC2_PWR_GPIO IMX_GPIO_NR(2, 19)
@@ -222,22 +219,39 @@ int power_init_board(void)
 	pmic_reg_read(p, PFUZE100_DEVICEID, &reg);
 	printf("PMIC:  PFUZE100 ID=0x%02x\n", reg);
 
+	/* Increase the DRAM_1V1 rail voltage up to 1V150 */
+	pmic_reg_read(p, PFUZE100_SW2VOL, &reg);
+	if ((reg & SW1x_NORMAL_MASK) != 0x1E) {
+		reg &= ~SW1x_NORMAL_MASK;
+		reg |= 0x1E;
+		pmic_reg_write(p, PFUZE100_SW2VOL, reg);
+	}
+
+	/* Increase the GPU rail voltage */
+	pmic_reg_read(p, PFUZE100_SW1ABVOL, &reg);
+	if ((reg & SW1x_NORMAL_MASK) != 0x1C) {
+		reg &= ~SW1x_NORMAL_MASK;
+		reg |= 0x1C;
+		pmic_reg_write(p, PFUZE100_SW1ABVOL, reg);
+	}
+	
 	pmic_reg_read(p, PFUZE100_SW3AVOL, &reg);
 	if ((reg & 0x3f) != 0x18) {
 		reg &= ~0x3f;
 		reg |= 0x18;
 		pmic_reg_write(p, PFUZE100_SW3AVOL, reg);
 	}
-
-	ret = pfuze_mode_init(p, APS_PFM);
-	if (ret < 0)
-		return ret;
-
+	
 	/* set SW3A standby mode to off */
 	pmic_reg_read(p, PFUZE100_SW3AMODE, &reg);
 	reg &= ~0xf;
 	reg |= APS_OFF;
 	pmic_reg_write(p, PFUZE100_SW3AMODE, reg);
+
+
+	ret = pfuze_mode_init(p, APS_PFM);
+	if (ret < 0)
+		return ret;
 
 	return 0;
 }
@@ -251,9 +265,9 @@ void spl_board_init(void)
 		if (sec_init())
 			printf("\nsec_init failed!\n");
 	}
-
-	init_usb_clk();
 	*/
+	
+	init_usb_clk();
 
 	puts("Normal Boot\n");
 }
@@ -296,13 +310,14 @@ void board_init_f(ulong dummy)
 
 	arch_cpu_init();
 
-	init_uart_clk(0);  /* UART1 clock */
+	setup_iomux_uart();
+
+	//init_uart_clk(0);  /* UART1 clock */
+	init_uart_clk(2);  /* UART3 clock */
 
 	board_early_init_f();
 
 	timer_init();
-
-	//setup_iomux_uart();
 
 	preloader_console_init();
 
@@ -316,7 +331,7 @@ void board_init_f(ulong dummy)
 
 	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
 	// The line below is commented owut as cl-som-imx8 does not have in version 2018.3
-	//setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
+	setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
 
 	power_init_board();
 
