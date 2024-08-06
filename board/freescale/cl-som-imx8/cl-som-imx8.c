@@ -335,6 +335,7 @@ int board_init(void)
 	board_qspi_init();
 #endif
 
+
 #ifdef CONFIG_FEC_MXC
 	setup_fec();
 #endif
@@ -345,7 +346,7 @@ setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info0);
 setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
 setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
 
-setup_iomux_usbmux();
+//setup_iomux_usbmux();
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
 	init_usb_clk();
