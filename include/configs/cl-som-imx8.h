@@ -11,6 +11,9 @@
 #include <asm/arch/imx-regs.h>
 #include "imx_env.h"
 
+#define CONFIG_DEBUG
+//#define CONFIG_DEBUG_UART
+
 #ifdef CONFIG_SPL_BUILD
 /*#define CONFIG_ENABLE_DDR_TRAINING_DEBUG*/
 

@@ -1,7 +1,7 @@
 i.MX8MQ EVK BOARD
 M:	Peng Fan <peng.fan@nxp.com>
-M:	Fabio Estevam <festevam@gmail.com>
+M:	Andrei Mironenko<andrei.mironenko@gmail.com>
 S:	Maintained
-F:	board/freescale/imx8mq_evk/
-F:	include/configs/imx8mq_evk.h
-F:	configs/imx8mq_evk_defconfig
+F:	board/freescale/compulab/
+F:	include/configs/cl-som-imx8.h
+F:	configs/cl-som-imx8_defconfig
