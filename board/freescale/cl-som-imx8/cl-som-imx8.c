@@ -76,24 +76,6 @@ static struct i2c_pads_info i2c_pad_info3 = {
 };
 
 
-#define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
-
-#define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE)
-
-static iomux_v3_cfg_t const wdog_pads[] = {
-	IMX8MQ_PAD_GPIO1_IO02__WDOG1_WDOG_B | MUX_PAD_CTRL(WDOG_PAD_CTRL),
-};
-
-static iomux_v3_cfg_t const uart1_pads[] = {
-	IMX8MQ_PAD_UART1_RXD__UART1_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
-	IMX8MQ_PAD_UART1_TXD__UART1_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
-};
-
-static iomux_v3_cfg_t const uart3_pads[] = {
-	IMX8MQ_PAD_UART3_RXD__UART3_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
-	IMX8MQ_PAD_UART3_TXD__UART3_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
-};
-
 #if CONFIG_IS_ENABLED(EFI_HAVE_CAPSULE_SUPPORT)
 struct efi_fw_image fw_images[] = {
 	{
@@ -110,19 +92,6 @@ struct efi_capsule_update_info update_info = {
 };
 
 #endif /* EFI_HAVE_CAPSULE_SUPPORT */
-
-int board_early_init_f(void)
-{
-	struct wdog_regs *wdog = (struct wdog_regs *)WDOG1_BASE_ADDR;
-
-	imx_iomux_v3_setup_multiple_pads(wdog_pads, ARRAY_SIZE(wdog_pads));
-	set_wdog_reset(wdog);
-
-	//imx_iomux_v3_setup_multiple_pads(uart1_pads, ARRAY_SIZE(uart1_pads));
-	imx_iomux_v3_setup_multiple_pads(uart3_pads, ARRAY_SIZE(uart3_pads));
-
-	return 0;
-}
 
 #ifdef CONFIG_FSL_QSPI
 int board_qspi_init(void)
@@ -168,62 +137,6 @@ int board_phy_config(struct phy_device *phydev)
 }
 #endif
 
-#ifdef CONFIG_USB_DWC3
-
-#define USB_PHY_CTRL0			0xF0040
-#define USB_PHY_CTRL0_REF_SSP_EN	BIT(2)
-
-#define USB_PHY_CTRL1			0xF0044
-#define USB_PHY_CTRL1_RESET		BIT(0)
-#define USB_PHY_CTRL1_COMMONONN		BIT(1)
-#define USB_PHY_CTRL1_ATERESET		BIT(3)
-#define USB_PHY_CTRL1_VDATSRCENB0	BIT(19)
-#define USB_PHY_CTRL1_VDATDETENB0	BIT(20)
-
-#define USB_PHY_CTRL2			0xF0048
-#define USB_PHY_CTRL2_TXENABLEN0	BIT(8)
-
-static struct dwc3_device dwc3_device_data = {
-#ifdef CONFIG_SPL_BUILD
-	.maximum_speed = USB_SPEED_HIGH,
-#else
-	.maximum_speed = USB_SPEED_SUPER,
-#endif
-	.base = USB1_BASE_ADDR,
-	.dr_mode = USB_DR_MODE_PERIPHERAL,
-	.index = 0,
-	.power_down_scale = 2,
-};
-
-int dm_usb_gadget_handle_interrupts(struct udevice *dev)
-{
-	dwc3_uboot_handle_interrupt(dev);
-	return 0;
-}
-
-static void dwc3_nxp_usb_phy_init(struct dwc3_device *dwc3)
-{
-	u32 RegData;
-
-	RegData = readl(dwc3->base + USB_PHY_CTRL1);
-	RegData &= ~(USB_PHY_CTRL1_VDATSRCENB0 | USB_PHY_CTRL1_VDATDETENB0 |
-			USB_PHY_CTRL1_COMMONONN);
-	RegData |= USB_PHY_CTRL1_RESET | USB_PHY_CTRL1_ATERESET;
-	writel(RegData, dwc3->base + USB_PHY_CTRL1);
-
-	RegData = readl(dwc3->base + USB_PHY_CTRL0);
-	RegData |= USB_PHY_CTRL0_REF_SSP_EN;
-	writel(RegData, dwc3->base + USB_PHY_CTRL0);
-
-	RegData = readl(dwc3->base + USB_PHY_CTRL2);
-	RegData |= USB_PHY_CTRL2_TXENABLEN0;
-	writel(RegData, dwc3->base + USB_PHY_CTRL2);
-
-	RegData = readl(dwc3->base + USB_PHY_CTRL1);
-	RegData &= ~(USB_PHY_CTRL1_RESET | USB_PHY_CTRL1_ATERESET);
-	writel(RegData, dwc3->base + USB_PHY_CTRL1);
-}
-#endif
 
 #ifdef CONFIG_USB_TCPC
 struct tcpc_port port;
@@ -281,6 +194,19 @@ static int setup_typec(void)
 #endif
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
+
+static struct dwc3_device dwc3_device_data = {
+#ifdef CONFIG_SPL_BUILD
+	.maximum_speed = USB_SPEED_HIGH,
+#else
+	.maximum_speed = USB_SPEED_SUPER,
+#endif
+	.base = USB1_BASE_ADDR,
+	.dr_mode = USB_DR_MODE_PERIPHERAL,
+	.index = 0,
+	.power_down_scale = 2,
+};
+
 int board_usb_init(int index, enum usb_init_type init)
 {
 	int ret = 0;
@@ -318,6 +244,18 @@ int board_usb_cleanup(int index, enum usb_init_type init)
 }
 #endif
 
+static iomux_v3_cfg_t const usbmux_pads[] = {
+	IMX8MQ_PAD_GPIO1_IO04__GPIO1_IO4 | MUX_PAD_CTRL(NO_PAD_CTRL),
+};
+
+static void setup_iomux_usbmux(void)
+{
+	imx_iomux_v3_setup_multiple_pads(usbmux_pads, ARRAY_SIZE(usbmux_pads));
+
+	gpio_request(IMX_GPIO_NR(1, 4), "usb_mux");
+	gpio_direction_output(IMX_GPIO_NR(1, 4), 0);
+}
+
 int board_init(void)
 {
 #ifdef CONFIG_FSL_QSPI
@@ -333,6 +271,8 @@ setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info0);
 
 setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
 setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
+
+setup_iomux_usbmux();
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
 	init_usb_clk();

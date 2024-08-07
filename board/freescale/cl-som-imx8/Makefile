@@ -4,7 +4,7 @@
 # SPDX-License-Identifier:      GPL-2.0+
 #
 
-obj-y += cl-som-imx8.o
+obj-y += common.o
 
 ifdef CONFIG_SPL_BUILD
 obj-y += spl.o
@@ -30,4 +30,6 @@ obj-y += ddr/lpddr4_timing_05_10_2g_3op.o
 #obj-y += ddr/lpddr4_timing_ff000010_4g_3op.o
 #obj-y += ddr/ddr.o
 
+else
+obj-y += cl-som-imx8.o
 endif
