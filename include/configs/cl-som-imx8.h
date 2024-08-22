@@ -11,6 +11,9 @@
 #include <asm/arch/imx-regs.h>
 #include "imx_env.h"
 
+#define CONFIG_DEBUG
+//#define CONFIG_DEBUG_UART
+
 #ifdef CONFIG_SPL_BUILD
 /*#define CONFIG_ENABLE_DDR_TRAINING_DEBUG*/
 
@@ -39,6 +42,7 @@
 #define BOOTENV
 #endif
 
+#if 0
 /*
  * Another approach is add the clocks for inmates into clks_init_on
  * in clk-imx8mq.c, then clk_ingore_unused could be removed.
@@ -138,6 +142,45 @@
 				   "fi; " \
 			   "fi; " \
 		   "fi;"
+#endif
+
+/* Initial environment variables */
+#define CFG_EXTRA_ENV_SETTINGS		\
+	"prepare_mcore=setenv mcore_clk clk-imx8mq.mcore_booted;\0" \
+	"scriptaddr=0x43500000\0" \
+	"kernel_addr_r=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
+	"bsp_script=boot.scr\0" \
+	"image=Image\0" \
+	"splashimage=0x50000000\0" \
+	"console=ttymxc2,115200 earlycon=ec_imx6q,0x30880000,115200 loglevel=8 initcall_debug\0" \
+	"fdt_addr_r=0x43000000\0"			\
+	"fdt_addr=0x43000000\0"			\
+	"fdt_high=0xffffffffffffffff\0"		\
+	"boot_fdt=try\0" \
+	"fdtfile=cl-som-imx8.dtb\0" \
+	"bootm_size=0x10000000\0" \
+	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
+	"mmcpart=1\0" \
+	"mmcroot=/dev/mmcblk1p2 rootwait rw\0" \
+	"mmcautodetect=yes\0" \
+	"mmcargs=setenv bootargs ${jh_clk} ${mcore_clk} console=${console} root=${mmcroot}\0 " \
+	"loadbootscript=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bsp_script};\0" \
+	"bootscript=echo Running bootscript from mmc ...; " \
+		"source\0" \
+	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
+	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr_r} ${fdtfile}\0" \
+	"mmcboot=echo Booting from mmc ...; " \
+		"run mmcargs; " \
+		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
+			"if run loadfdt; then " \
+				"booti ${loadaddr} - ${fdt_addr_r}; " \
+			"else " \
+				"echo WARN: Cannot load the DT; " \
+			"fi; " \
+		"else " \
+			"echo wait for boot; " \
+		"fi;\0" \
+	"bootcmd=run loadimage; run loadfdt; run mmcboot;\0"
 
 /* Link Definitions */
 
@@ -151,7 +194,9 @@
 #define PHYS_SDRAM_2					0x100000000
 #define PHYS_SDRAM_2_SIZE				0x40000000 /* 1GB */
 
-#define CFG_MXC_UART_BASE				UART_BASE_ADDR(1)
+//#define CFG_MXC_UART_BASE				UART_BASE_ADDR(1)
+// UART3
+#define CFG_MXC_UART_BASE				UART_BASE_ADDR(3)
 #define CONFIG_BAUDRATE					115200
 
 #define CFG_SYS_FSL_USDHC_NUM			2

@@ -222,6 +222,23 @@ int power_init_board(void)
 	pmic_reg_read(p, PFUZE100_DEVICEID, &reg);
 	printf("PMIC:  PFUZE100 ID=0x%02x\n", reg);
 
+	/* Increase the DRAM_1V1 rail voltage up to 1V150 */
+	pmic_reg_read(p, PFUZE100_SW2VOL, &reg);
+	if ((reg & SW1x_NORMAL_MASK) != 0x1E) {
+		reg &= ~SW1x_NORMAL_MASK;
+		reg |= 0x1E;
+		pmic_reg_write(p, PFUZE100_SW2VOL, reg);
+	}
+
+	/* Increase the GPU rail voltage */
+	pmic_reg_read(p, PFUZE100_SW1ABVOL, &reg);
+	if ((reg & SW1x_NORMAL_MASK) != 0x1C) {
+		reg &= ~SW1x_NORMAL_MASK;
+		reg |= 0x1C;
+		pmic_reg_write(p, PFUZE100_SW1ABVOL, reg);
+	}
+
+	/* Increase the DRAM_0V9 rail voltage up to 1V0 */
 	pmic_reg_read(p, PFUZE100_SW3AVOL, &reg);
 	if ((reg & 0x3f) != 0x18) {
 		reg &= ~0x3f;
@@ -229,15 +246,15 @@ int power_init_board(void)
 		pmic_reg_write(p, PFUZE100_SW3AVOL, reg);
 	}
 
-	ret = pfuze_mode_init(p, APS_PFM);
-	if (ret < 0)
-		return ret;
-
 	/* set SW3A standby mode to off */
 	pmic_reg_read(p, PFUZE100_SW3AMODE, &reg);
 	reg &= ~0xf;
 	reg |= APS_OFF;
 	pmic_reg_write(p, PFUZE100_SW3AMODE, reg);
+
+	ret = pfuze_mode_init(p, APS_PFM);
+	if (ret < 0)
+		return ret;
 
 	return 0;
 }
@@ -287,8 +304,8 @@ void board_init_f(ulong dummy)
 {
 	int ret;
 
-	/* Clear the BSS. */
-	memset(__bss_start, 0, __bss_end - __bss_start);
+	/* Clear global data */
+	memset((void *)gd, 0, sizeof(gd_t));
 
 	/* PCIE_VPH connects to 3.3v on EVK, enable VREG to generate 1.8V to PHY */
 	// The line below is commented owut as cl-som-imx8 does not have in version 2018.3
@@ -296,15 +313,17 @@ void board_init_f(ulong dummy)
 
 	arch_cpu_init();
 
-	init_uart_clk(0);  /* UART1 clock */
+	init_uart_clk(0);    /* UART1 clock */
+	init_uart_clk(2);    /* UART3 clock */
 
 	board_early_init_f();
 
 	timer_init();
 
-	//setup_iomux_uart();
-
 	preloader_console_init();
+
+	/* Clear the BSS. */
+	memset(__bss_start, 0, __bss_end - __bss_start);
 
 	ret = spl_init();
 	if (ret) {
