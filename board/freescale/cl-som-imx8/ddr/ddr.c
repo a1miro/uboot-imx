@@ -69,7 +69,7 @@ static const struct lpddr4_desc lpddr4_array_3op[] = {
 	{ .name = "Samsung",  .id = 0x01060008, .subind = 0xff, .size = 1024, .timing = &dram_timing_1g_3op_low },
 	{ .name = "Samsung",  .id = 0x01061010, .subind = 0xff, .size = 2048, .timing = &dram_timing_05_10_2g_3op },
 	{ .name = "Nanya",    .id = 0x05000008, .subind = 0xff, .size = 1024, .timing = &dram_timing_1g_3op_low },
-	{ .name = "Nanya",    .id = 0x05000010, .subind = 0xff,.size = 2048, .timing = &dram_timing_05_10_2g_3op },
+	{ .name = "Nanya",    .id = 0x05000010, .subind = 0xff, .size = 2048, .timing = &dram_timing_05_10_2g_3op },
 	{ .name = "Alien",    .id = 0x52000008, .subind = 0xff, .size = 1024, .timing = &dram_timing_1g_3op_low },
 };
 
@@ -130,6 +130,7 @@ void spl_dram_init(void)
 		lpddr4_array = lpddr4_array_2op;
 		ddr_asize = ARRAY_SIZE(lpddr4_array_2op);
 	}
+
 #if 0
 	if (lpddr4_tcm_desc->sign != DEFAULT) {
 		/* get ddr type from the eeprom if not in tcm scan mode */
@@ -170,7 +171,7 @@ void spl_dram_init(void)
 	ddr_init(lpddr4_array[i].timing);
 
 	if(ddrphy_train_pass) {
-	ddr_info_mrr = lpddr4_get_mr();
+		ddr_info_mrr = lpddr4_get_mr();
 		if (ddr_info_mrr == 0xFFFFFFFF || ddr_info_mrr == 0) {
 			printf("DDRINFO(M): mr5-8 [ 0x%x ] is invalid; reset\n", ddr_info_mrr);
 			ddrphy_train_pass = false;
@@ -181,9 +182,8 @@ void spl_dram_init(void)
 
 	if (!ddrphy_train_pass) {
 		SPL_TCM_INIT;
-		#if 0
-		do_reset(NULL,0,0,NULL);
-		#endif
+		//do_reset(NULL,0,0,NULL);
+		reset_cpu(0);
 	}
 
 	printf("DDRINFO(mr5-8 ): mr5-8 [ 0x%x ]\n", ddr_info_mrr);
@@ -191,12 +191,14 @@ void spl_dram_init(void)
 
 	if (ddr_info_mrr != ddr_info) {
 		SPL_TCM_INIT;
-		#if 0
-		do_reset(NULL,0,0,NULL);
-		#endif
+		//do_reset(NULL,0,0,NULL);
+		reset_cpu(0);
 	}
 
+	ddr_init(lpddr4_array[i].timing);
+
 	SPL_TCM_FINI;
+
 
 #if 0
 	if (ddr_found == 0) {
@@ -223,5 +225,6 @@ void spl_dram_init(void)
 
 		lpddr4_tcm_desc->size = ddr_tcm_size;
 	}
+
 #endif
 }

@@ -37,9 +37,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-//extern struct dram_timing_info dram_timing_b0;
-//extern struct dram_timing_info dram_timing_4g;
-
+#if 0
 static void spl_dram_init(void)
 {
 	/* Check PCA6416A IO EXP on 4GB WEVK only */
@@ -54,11 +52,12 @@ static void spl_dram_init(void)
 #else
 	/* ddr init */
 	//if (soc_rev() >= CHIP_REV_2_1)
-		ddr_init(&dram_timing);
+		ddr_init(dram_timing);
 	//else
 		//ddr_init(&dram_timing_b0);
 #endif
 }
+#endif
 
 #define UART_PAD_CTRL (PAD_CTL_PUE |  PAD_CTL_DSE7 | PAD_CTL_HYS)
 

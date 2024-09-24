@@ -18,7 +18,6 @@ extern struct dram_timing_info dram_timing_ff000110_4g_2op;
 extern struct dram_timing_info dram_timing_ff000110_4g_3op;
 extern struct dram_timing_info dram_timing_ff000010_2g_3op;
 extern struct dram_timing_info dram_timing_ff000010_4g_3op;
-//void ddr_init(struct dram_timing_info *dram_timing);
-//void spl_dram_init(void);
 
+void spl_dram_init(void);
 #endif
